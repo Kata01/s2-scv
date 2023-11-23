@@ -1,6 +1,6 @@
-import json
 import subprocess
 from subs import Subtitles
+
 
 class s2:
     def __init__(self, input_file):
@@ -36,7 +36,7 @@ class s2:
         subprocess.run(['ffmpeg', '-i', cut_video_file, '-vn', '-c:a', 'aac', aac_file])
 
         # Fusionar en un contenedor mp4
-        subprocess.run(['ffmpeg','-i', cut_video_file, '-i', mp3_mono_file, '-i', mp3_stereo_low_bitrate_file, '-i',
+        subprocess.run(['ffmpeg', '-i', cut_video_file, '-i', mp3_mono_file, '-i', mp3_stereo_low_bitrate_file, '-i',
                         aac_file, '-filter_complex',
                         "[0:v]concat=n=1:v=1:a=0[vout];[1:a][2:a][3:a]concat=n=3:v=0:a=1[aout]",
                         '-map', "[vout]", '-map', '[aout]', '-c:v', 'libx264', '-c:a', 'aac', output_file])
@@ -46,7 +46,7 @@ class s2:
 
     def get_num_tracks(self, input_file):
         result = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'a', '-show_entries',
-                                'stream=index,codec_name', '-of', 'csv=p=0', input_file], text=True,
+                                 'stream=index,codec_name', '-of', 'csv=p=0', input_file], text=True,
                                 capture_output=True)
 
         num_tracks = len(result.stdout.strip().split('\n'))
@@ -57,14 +57,11 @@ class s2:
             print(f"The MP4 container does not contain any audio track")
 
 
-
-
-
 input_video = 'BBB.mp4'
 output_video = 'output_cut.mp4'
 output_video2 = 'output_contaniner.mp4'
 
-# Crear instancia de
+# Crear instancia de la clase s2
 s2class1 = s2(input_video)
 
 while True:
@@ -84,7 +81,7 @@ while True:
     elif choice == '3':
         s2class1.get_num_tracks(output_video2)
     elif choice == '4':
-        input_video = "BBB.mp4"  # Replace with your video URL
+        input_video = "BBB.mp4"
         subtitles_url = "https://www.opensubtitles.com/download/813CC8487AFDAC6E7B90F52225A78F11900640E04D38972AD23EDD8C5A6429C51890988AEBBB4C8AEFAB2D2C86A0F64318481482037824128FFA8B9C3F2791440FDE016FF4EB25A47B3C923E2582227EB49D05EC5938AF39F27FCB1823C61F1FC1B57CB367AF473B0D431EF5BBC4D05F90FAAB33D7D569C510A882CA2AA039AADE195A4FA218FCEBFE111FC6552A99C9BDF606C126535349619B93D5C4F68753D4F21762405B1C347CFFFC4BAEC52353AB45EBAD360C1E93F4EF742167A15D823237792EF83DE544017818C3D28A2AF7C8468C333F20B0930AD46BBD0F0D6EDC36B1312F0E55EF72/subfile/big_buck_bunny.eng.srt"  # Replace with the subtitles URL
 
         output_video = "BBB_subtitles.mp4"
