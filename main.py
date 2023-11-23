@@ -1,6 +1,6 @@
 import subprocess
 from subs import Subtitles
-
+from extract_yuv_histogram import ExtractYuvHistogram
 
 class s2:
     def __init__(self, input_file):
@@ -10,8 +10,10 @@ class s2:
         # Cortar 9 primeros segundos de video con el comando "ffmpeg -i input.mp4 -t 9 output.mp4"
         subprocess.run(['ffmpeg', '-i', self.input_file, '-t', '9', output_file])
 
-        # Obtener video con vectores de movimiento y macrobloques con el comando "ffmpeg -flags2 +export_mvs -i
-        # input.mp4 -vf codecview=mv=pf+bf+bb output.mp4"
+        # Obtener video con vectores de movimiento y macrobloques con el comando "ffmpeg -flags2 +export_mvs -i input.mp4 -vf codecview=mv=pf+bf+bb output.mp4"
+        # pf: para vectores de movimiento predichos hacia adelante de imágenes P
+        # bf: para vectores de movimiento predichos hacia adelante de imágenes B
+        # bb: para vectores de movimiento predichos hacia atrás de imágenes B
         subprocess.run(['ffmpeg', '-flags2', '+export_mvs', '-i', output_file, '-vf', 'codecview=mv=pf+bf+bb',
                         'output_analyzed.mp4', ])
 
@@ -60,6 +62,8 @@ class s2:
 input_video = 'BBB.mp4'
 output_video = 'output_cut.mp4'
 output_video2 = 'output_contaniner.mp4'
+output_video3 = "BBB_subtitles.mp4"
+output_video4 = "output_yuv_histogram.mp4"
 
 # Crear instancia de la clase s2
 s2class1 = s2(input_video)
@@ -70,6 +74,7 @@ while True:
     print("2. Create New Container")
     print("3. Get number of tracks from a container")
     print("4. Add subtitles to video")
+    print("5. Extract YUV histogram")
     print("0. Exit")
 
     choice = input("Enter your choice: ")
@@ -81,18 +86,18 @@ while True:
     elif choice == '3':
         s2class1.get_num_tracks(output_video2)
     elif choice == '4':
-        input_video = "BBB.mp4"
         subtitles_url = "https://www.opensubtitles.com/download/813CC8487AFDAC6E7B90F52225A78F11900640E04D38972AD23EDD8C5A6429C51890988AEBBB4C8AEFAB2D2C86A0F64318481482037824128FFA8B9C3F2791440FDE016FF4EB25A47B3C923E2582227EB49D05EC5938AF39F27FCB1823C61F1FC1B57CB367AF473B0D431EF5BBC4D05F90FAAB33D7D569C510A882CA2AA039AADE195A4FA218FCEBFE111FC6552A99C9BDF606C126535349619B93D5C4F68753D4F21762405B1C347CFFFC4BAEC52353AB45EBAD360C1E93F4EF742167A15D823237792EF83DE544017818C3D28A2AF7C8468C333F20B0930AD46BBD0F0D6EDC36B1312F0E55EF72/subfile/big_buck_bunny.eng.srt"  # Replace with the subtitles URL
-
-        output_video = "BBB_subtitles.mp4"
-
-        subtitle_processor = Subtitles(input_video, subtitles_url, output_video)
-
+        # Crear instancia de subtitle processor
+        subtitle_processor = Subtitles(input_video, subtitles_url, output_video3)
+        # Descargar subtitulos
         subtitle_processor.download_subtitles()
-
+        # Integrar los subtitulos descargados
         subtitle_processor.integrate_subtitles()
+    elif choice == '5':
+        yuv_histogram = ExtractYuvHistogram(input_video, output_video4)
+        yuv_histogram.extract_yuv_histogram()
     elif choice == '0':
         print("Exiting program.")
         break
     else:
-        print("Invalid choice. Please enter 0, 1, or 2.")
+        print("Invalid choice. Please enter 0, 1, 2, 3 or 4")
